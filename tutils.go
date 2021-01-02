@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 // tUtils: A bunch of boilerplate that I end up using in different projects
@@ -25,4 +26,15 @@ func GetDockerSecret(secretName string) string {
 	}
 
 	return string(data)
+}
+
+// Tobool is a helper function designed to take any string input and spit
+// out the Go equivalent. Anything that isn't "true" (upper or lower)
+// will return false. Useful for things like input from env vars.
+func Tobool(value string) bool {
+	if strings.ToLower(value) == "true" {
+		return true
+	}
+
+	return false
 }
