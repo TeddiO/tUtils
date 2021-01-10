@@ -1,8 +1,10 @@
 package tutils
 
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
@@ -37,4 +39,19 @@ func Tobool(value string) bool {
 	}
 
 	return false
+}
+
+func CreateDatabaseInstance(dbHost string, dbUsername string, dbPassword string, dbSchema string, dbConnectionType string) *sql.DB {
+
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s", dbUsername, dbPassword, dbConnectionType, dbHost, dbSchema))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+
+	return db
 }
