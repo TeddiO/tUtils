@@ -3,7 +3,6 @@ package tutils
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -22,7 +21,7 @@ func GetEnvVar(varName string, defaultValue string) string {
 }
 
 func GetDockerSecret(secretName string) string {
-	data, err := ioutil.ReadFile(fmt.Sprintf("/run/secrets/%s", secretName))
+	data, err := os.ReadFile(fmt.Sprintf("/run/secrets/%s", secretName))
 	if err != nil {
 		return ""
 	}
@@ -34,16 +33,14 @@ func GetDockerSecret(secretName string) string {
 // out the Go equivalent. Anything that isn't "true" (upper or lower)
 // will return false. Useful for things like input from env vars.
 func Tobool(value string) bool {
-	if strings.ToLower(value) == "true" {
-		return true
-	}
-
-	return false
+	return strings.ToLower(value) == "true"
 }
 
-func CreateDatabaseInstance(dbHost string, dbUsername string, dbPassword string, dbSchema string, dbConnectionType string) *sql.DB {
+// CreateMySQLDatabaseInstance is a helper function that creates a new database connection
+// to a MySQL database.
+func CreateMySQLDatabaseInstance(dbHost string, dbUsername string, dbPassword string, dbSchema string, dbConnectionType string, dbOptionalParams string) *sql.DB {
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s", dbUsername, dbPassword, dbConnectionType, dbHost, dbSchema))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@%s(%s)/%s?%s", dbUsername, dbPassword, dbConnectionType, dbHost, dbSchema, dbOptionalParams))
 
 	if err != nil {
 		log.Fatal(err)
